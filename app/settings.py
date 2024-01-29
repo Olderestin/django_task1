@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     # for API
     'rest_framework',
     'team',
+
+    # for openapi documentation
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
