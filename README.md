@@ -74,6 +74,10 @@ ___
    ```bash
    docker compose up --build
 
+2. Perform database migrations:
+   ```bash
+    docker exec -it django python manage.py migrate
+
 ___
 ## Note:
 
