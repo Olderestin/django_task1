@@ -62,11 +62,7 @@ ___
     ```bash
     poetry run python manage.py migrate
 
-4. Create superuser:
-   ```bash
-   poetry run python manage.py createsuperuser
-
-5.  Run the app:
+4.  Run the app:
     ```bash
     poetry run python manage.py runserver
 
@@ -82,7 +78,20 @@ ___
    ```bash
     docker exec -it django python manage.py migrate
 
-3. Create superuser:
+
+
+___
+## Using admin panel:
+
+1. For pip method:
+   ```bash
+   run python manage.py createsuperuser
+
+2. For Poetry method:
+   ```bash
+   poetry run python manage.py createsuperuser
+
+3. For Docker method:
    ```bash
    docker exec -it django python manage.py createsuperuser
 
