@@ -60,11 +60,11 @@ ___
 
 3. Make migrations:
     ```bash
-    python manage.py migrate
+    poetry run python manage.py migrate
 
 4.  Run the app:
     ```bash
-    python manage.py runserver
+    poetry run python manage.py runserver
 
 ___
 
@@ -77,6 +77,23 @@ ___
 2. Perform database migrations:
    ```bash
     docker exec -it django python manage.py migrate
+
+
+
+___
+## Using admin panel:
+
+1. For pip method:
+   ```bash
+   run python manage.py createsuperuser
+
+2. For Poetry method:
+   ```bash
+   poetry run python manage.py createsuperuser
+
+3. For Docker method:
+   ```bash
+   docker exec -it django python manage.py createsuperuser
 
 ___
 ## Note:
