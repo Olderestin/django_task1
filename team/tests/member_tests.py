@@ -1,15 +1,19 @@
 import pytest
+
 from team.models import Member
-from team.tests.fixtures import client, member_data
+from team.tests.fixtures import client
+from team.tests.utils import create_member_data
+
+DATA = create_member_data()
 
 #positive case
+@pytest.mark.parametrize("data", DATA)
 @pytest.mark.django_db
-def test_create_member(client: client, member_data: member_data) -> None:    
-    for data in member_data:
-        response = client.post('/api/member/', data)
-        assert response.status_code == 201
-        assert response.data['email'] == data['email']
-        assert Member.objects.filter(email=data['email']).exists()
+def test_create_member(client: client, data: dict) -> None:    
+    response = client.post('/api/member/', data)
+    assert response.status_code == 201
+    assert response.data['email'] == data['email']
+    assert Member.objects.filter(email=data['email']).exists()
 
 @pytest.mark.django_db
 def test_get_members(client:client) -> None:
@@ -17,53 +21,52 @@ def test_get_members(client:client) -> None:
     assert response.status_code == 200
     assert len(response.data) == Member.objects.count()
 
+@pytest.mark.parametrize("data", DATA)
 @pytest.mark.django_db
-def test_retrieve_member(client: client, member_data: member_data) -> None:
-
-    for data in member_data:
+def test_retrieve_member(client: client, data: dict) -> None:
         member = Member.objects.create(first_name=data['first_name'], last_name=data['last_name'], email=data['email'])
 
         response = client.get(f'/api/member/{member.id}/')
         assert response.status_code == 200
         assert response.data['email'] == data['email']
 
+@pytest.mark.parametrize("data", DATA)
 @pytest.mark.django_db
-def test_update_member(client: client, member_data: member_data) -> None:
+def test_update_member(client: client, data: dict) -> None:
     member = Member.objects.create(first_name='Jane', last_name='Doe', email='jane@example.com')
-    
-    for data in member_data:
-        response = client.put(f'/api/member/{member.id}/', data)
-        assert response.status_code == 200
-        assert Member.objects.get(id=member.id).email == data['email']
 
+    response = client.put(f'/api/member/{member.id}/', data)
+    assert response.status_code == 200
+    assert Member.objects.get(id=member.id).email == data['email']
+
+@pytest.mark.parametrize("data", DATA)
 @pytest.mark.django_db
-def test_delete_member(client: client, member_data: member_data) -> None:
-    for data in member_data:
-        member = Member.objects.create(first_name=data['first_name'], last_name=data['last_name'], email=data['email'])
+def test_delete_member(client: client, data: dict) -> None:
+    member = Member.objects.create(first_name=data['first_name'], last_name=data['last_name'], email=data['email'])
 
-        response = client.delete(f'/api/member/{member.id}/')
-        assert response.status_code == 204
-        assert not Member.objects.filter(id=member.id).exists()
+    response = client.delete(f'/api/member/{member.id}/')
+    assert response.status_code == 204
+    assert not Member.objects.filter(id=member.id).exists()
 
 #negative case
+@pytest.mark.parametrize("data", DATA)
 @pytest.mark.django_db
-def test_create_member_missing_required_fields(client: client, member_data: member_data) -> None:
-    for data in member_data:
-        response = client.post('/api/member/', data={k: data[k] for k in list(data.keys())[:2]})
-        assert response.status_code == 400
-        assert 'email' in response.data
-        assert not Member.objects.exists()
+def test_create_member_missing_required_fields(client: client, data: dict) -> None:
+    response = client.post('/api/member/', data={k: data[k] for k in list(data.keys())[:2]})
+    assert response.status_code == 400
+    assert 'email' in response.data
+    assert not Member.objects.exists()
 
 @pytest.mark.django_db
 def test_get_nonexistent_member_detail(client: client) -> None:
     response = client.get('/api/team/999/')
     assert response.status_code == 404
 
+@pytest.mark.parametrize("data", DATA)
 @pytest.mark.django_db
-def test_update_nonexistent_member(client: client, member_data: member_data) -> None:
-    for data in member_data:
-        response = client.put('/api/team/999/', data=data)
-        assert response.status_code == 404
+def test_update_nonexistent_member(client: client, data: dict) -> None:
+    response = client.put('/api/team/999/', data=data)
+    assert response.status_code == 404
 
 @pytest.mark.django_db
 def test_delete_nonexistent_member(client: client) -> None:
