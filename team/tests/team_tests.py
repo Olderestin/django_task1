@@ -2,7 +2,7 @@ import pytest
 
 from team.models import Team
 from team.tests.fixtures import client
-from team.tests.utils import create_team_data
+from team.tests.test_data import create_team_data
 
 DATA = create_team_data()
 
