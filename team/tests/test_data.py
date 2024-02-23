@@ -1,20 +1,28 @@
+from typing import List
+from team.tests.schemas import MemberData, TeamData
 
-def create_member_data():
+def create_member_data() -> List[MemberData]:
+    """
+    Create a list of data for members.
+    """
     data = []
     for i in range(20):
-        data.append({
-            'first_name': f'John{i}',
-            'last_name': f'Doe{i}',
-            'email': f'john{i}@example.com'
-        })
+        data.append(MemberData(
+            first_name=f'John{i}',
+            last_name=f'Doe{i}',
+            email=f'john{i}@example.com'
+        ))
 
     return data
 
-def create_team_data():
+def create_team_data() -> List[TeamData]:
+    """
+    Create a list of data for teams.
+    """
     data = []
     for i in range(20):
-        data.append({
-        "title": f"Test Team{i}",
-        "description": f"Test Description{i}"
-        })
+        data.append(TeamData(
+            title=f"Test Team{i}",
+            description=f"Test Description{i}"
+        ))
     return data
