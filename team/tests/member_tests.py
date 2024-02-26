@@ -17,13 +17,11 @@ def test_create_member(client: client, data: MemberData) -> None:
     Args:
         client (APIClient): Django REST Framework's APIClient fixture.
         data: Member data.
-    """   
-    data = asdict(data)
-
-    response = client.post('/api/member/', data)
+    """
+    response = client.post('/api/member/', asdict(data))
     assert response.status_code == 201
-    assert response.data['email'] == data['email']
-    assert Member.objects.filter(email=data['email']).exists()
+    assert response.data['email'] == data.email
+    assert Member.objects.filter(email=data.email).exists()
 
 @pytest.mark.django_db
 def test_get_members(client:client) -> None:
@@ -47,13 +45,11 @@ def test_retrieve_member(client: client, data: MemberData) -> None:
         client (APIClient): Django REST Framework's APIClient fixture.
         data: Member data.
     """
-    data = asdict(data)
-
-    member = Member.objects.create(first_name=data['first_name'], last_name=data['last_name'], email=data['email'])
+    member = Member.objects.create(first_name=data.first_name, last_name=data.last_name, email=data.email)
 
     response = client.get(f'/api/member/{member.id}/')
     assert response.status_code == 200
-    assert response.data['email'] == data['email']
+    assert response.data["email"] == data.email
 
 @pytest.mark.parametrize("data", create_member_data())
 @pytest.mark.django_db
@@ -65,13 +61,11 @@ def test_update_member(client: client, data: MemberData) -> None:
         client (APIClient): Django REST Framework's APIClient fixture.
         data: Member data.
     """
-    data = asdict(data)
-
     member = Member.objects.create(first_name='Jane', last_name='Doe', email='jane@example.com')
 
-    response = client.put(f'/api/member/{member.id}/', data)
+    response = client.put(f'/api/member/{member.id}/', asdict(data))
     assert response.status_code == 200
-    assert Member.objects.get(id=member.id).email == data['email']
+    assert Member.objects.get(id=member.id).email == data.email
 
 @pytest.mark.parametrize("data", create_member_data())
 @pytest.mark.django_db
@@ -83,9 +77,7 @@ def test_delete_member(client: client, data: MemberData) -> None:
         client (APIClient): Django REST Framework's APIClient fixture.
         data: Member data.
     """
-    data = asdict(data)
-
-    member = Member.objects.create(first_name=data['first_name'], last_name=data['last_name'], email=data['email'])
+    member = Member.objects.create(first_name=data.first_name, last_name=data.last_name, email=data.email)
 
     response = client.delete(f'/api/member/{member.id}/')
     assert response.status_code == 204
@@ -102,9 +94,7 @@ def test_create_member_missing_required_fields(client: client, data: MemberData)
         client (APIClient): Django REST Framework's APIClient fixture.
         data: Member data.
     """
-    data = asdict(data)
-
-    response = client.post('/api/member/', data={k: data[k] for k in list(data.keys())[:2]})
+    response = client.post('/api/member/', data={key: value for key, value in data.__dict__.items() if key in ['first_name', 'last_name']})
     assert response.status_code == 400
     assert 'email' in response.data
     assert not Member.objects.exists()
@@ -130,9 +120,7 @@ def test_update_nonexistent_member(client: client, data: MemberData) -> None:
         client (APIClient): Django REST Framework's APIClient fixture.
         data: Member data.
     """
-    data = asdict(data)
-
-    response = client.put('/api/team/999/', data=data)
+    response = client.put('/api/team/999/', data=asdict(data))
     assert response.status_code == 404
 
 @pytest.mark.django_db
